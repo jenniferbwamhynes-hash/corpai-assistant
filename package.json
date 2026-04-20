@@ -1,0 +1,21 @@
+{
+  "name": "corpai-assistant",
+  "version": "0.1.0",
+  "description": "Internal AI assistant for employee support",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.20.0",
+    "@slack/bolt": "^3.17.0",
+    "dotenv": "^16.4.0",
+    "pinecone-client": "^2.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.0"
+  }
+}
