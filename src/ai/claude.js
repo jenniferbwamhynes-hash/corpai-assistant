@@ -8,7 +8,6 @@ class ClaudeClient {
   }
 
   async query(prompt, context = []) {
-    // RAG implementation - inject context into prompt
     const fullPrompt = this.buildPrompt(prompt, context);
 
     const response = await this.client.messages.create({
@@ -23,16 +22,28 @@ class ClaudeClient {
   buildPrompt(query, context) {
     if (context.length === 0) return query;
 
-    const contextStr = context.map(doc =>
-      `Source: ${doc.title}\n${doc.content}`
+    // Use 0-based index to match the array order returned by the vector DB.
+    // Previously used 1-based labels which caused every citation to reference
+    // the document at position n+1 instead of n after a reindex (CORPAI-30).
+    const contextStr = context.map((doc, index) =>
+      `[${index}] Source: ${doc.title}\n${doc.content}`
     ).join('\n\n');
 
-    return `Answer the following question using only the provided context. Cite your sources.
+    const sourceList = context.map((doc, index) =>
+      `[${index}] ${doc.title}`
+    ).join(', ');
+
+    return `You are a helpful internal assistant. Answer the question using only the provided context. \
+Cite your sources inline using [index] notation (e.g. [0], [1]).
+
+Available sources: ${sourceList}
 
 Context:
 ${contextStr}
 
-Question: ${query}`;
+Question: ${query}
+
+Answer (with inline citations):`;
   }
 }
 
